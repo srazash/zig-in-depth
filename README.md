@@ -16,9 +16,9 @@ scoop install zig zls
 
 1. create a new directory
 2. run `zig init-exe` or `zig init-lib` in that directory to create an executable or library project
-3. run `zig build` to build to te default `zig-out/bin` directory
+3. run `zig build` to build to the default `zig-out/bin` directory
 4. run `zig build run` to build and run executable projects
 5. run `zig build test` to run any tests
-6. run `zig build` and various sub commands with the `--summary all` option to view steps involved, this is useful for tests as a successful test generates no output by default
+6. run `zig build` and various subcommands with the `--summary all` option to view the steps involved, this is useful for tests as a successful test generates no output by default
 
-Unlike with an executable project, we're unable to run `zig build run` in a library project, but we can eun `zig build` and `zig build test`, which perform the same functions as in an executable project
+Unlike with an executable project, we're unable to run `zig build run` in a library project, but we can run `zig build` and `zig build test`, which perform the same functions as in an executable project
