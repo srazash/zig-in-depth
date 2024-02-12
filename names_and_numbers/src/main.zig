@@ -88,6 +88,10 @@ pub fn main() !void {
     _ = std.math.inf(f64); // positive infinity
     _ = -std.math.inf(f64); // negative infinity
     _ = std.math.nan(f64); // not a number
+    _ = -std.math.nan(f64); // negative not a number
+
+    printTypeInfo("f64 nan", std.math.nan(f64));
+    printTypeInfo("neg f64 nan", -std.math.nan(f64));
 
     e.extTest(); // `pub` functions from imported files are called using dot notation
     s.echo("hello");
