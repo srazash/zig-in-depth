@@ -90,6 +90,8 @@ pub fn main() !void {
     _ = std.math.nan(f64); // not a number
     _ = -std.math.nan(f64); // negative not a number
 
+    printTypeInfo("f64 inf", std.math.inf(f64));
+    printTypeInfo("neg f64 inf", -std.math.inf(f64));
     printTypeInfo("f64 nan", std.math.nan(f64));
     printTypeInfo("neg f64 nan", -std.math.nan(f64));
 
