@@ -21,7 +21,11 @@ pub fn main() !void {
     //b_ptr = &a; <- error: cannot assign to constant
 
     // but we can declare a pointer as a variable and change the address of what it points to
-    var c_ptr = a_ptr;
-    c_ptr = b_ptr;
+    var c_ptr = b_ptr;
+    c_ptr = a_ptr;
+    //a_ptr.* = 101; <- causes an error
+    // NOTE: even if a pointer is var, if the value it points to is a const we cannot change that value
     print("c_ptr address -> {}\nc_ptr value -> {}\ntype of c_ptr -> {}\n", .{ c_ptr, c_ptr.*, @TypeOf(c_ptr) });
+
+    // multi item pointers
 }
