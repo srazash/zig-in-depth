@@ -70,7 +70,7 @@ pub fn main() !void {
     print("h_ptr -> {?}\ntype of h_ptr -> {}\n", .{ h_ptr, @TypeOf(h_ptr) });
 
     h_ptr = &address;
-    print("h_ptr -> {?}\ntype of h_ptr -> {}\n", .{ h_ptr, @TypeOf(h_ptr) });
+    print("h_ptr.?.* -> {?}\ntype of h_ptr -> {}\n", .{ h_ptr.?.*, @TypeOf(h_ptr) });
 
     // the size of an optional pointer is the sanme as a normal pointer
     print("h_ptr size -> {}\n*usize size -> {}\n", .{ @sizeOf(@TypeOf(h_ptr)), @sizeOf(*usize) });
