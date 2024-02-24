@@ -16,8 +16,16 @@ const Point = @import("point.zig").Point; // we now `@import` the Point function
 
 pub fn main() !void {
     // we have to specify the type T -> `Point(f32)`
-    const a_point = Point(f32).new(0, 0);
-    const b_point = Point(f32).new(1, 1);
+    //const a_point = Point(f32).new(0, 0);
+    //const b_point = Point(f32).new(1, 1);
+
+    // so we don't have to specify `Point(f32)` everytime we create a new point we can create
+    // a constant to act as an alias by asssigning it a type
+    //const P = Point(f32);
+    //const P = Point(f16); // because the Point function is generic we can assign another data type
+    const P = Point(i8);
+    const a_point: P = P.new(0, 0);
+    const b_point: P = P.new(1, 1); // we can even assign it as a type directly
 
     print("distance -> {d:.1}\n", .{a_point.distance(b_point)});
     print("type of a_point -> {}\n", .{@TypeOf(a_point)});
