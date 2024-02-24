@@ -1,26 +1,26 @@
 const std = @import("std");
 
-// Point.zig is almost a direct copy of the Point struct in main.zig
-// and it will function the same way as the Point struct
-// except for a couple of differences:
+// Point becomes a function, take a parameter that is a type, and returns a type
+// specifically we mark the parameter as `comptime` to ensure it is known at compile time
+// because we return a type our function name starts with an uppercase letter
+pub fn Point(comptime T: type) type {
+    return struct {
+        const Self = @This(); // const Point becomes const Self
 
-x: f32,
-y: f32 = 0,
+        // our fields are now of type T
+        x: T = 0,
+        y: T = 0,
 
-// we need to use the @This() built-in
-// in a regular struct we declare `const <Name> = struct { ... }`
-// Zig is able to take the `<Name>` we assign the struct and reference the structs fields, functions and methods
-// when we create a file like Point.zig we need a way to tell Zig that our fields, functions and methods relate
-// to "Point", and we do this with @This()
-const Point = @This();
+        // parameters are now of type T, and we return Self
+        pub fn new(x: T, y: T) Self {
+            return .{ .x = x, .y = y };
+        }
 
-// we need to make our functions and methods `pub` so they are accessible outside of this file
-pub fn new(x: f32, y: f32) Point {
-    return .{ .x = x, .y = y };
-}
-
-pub fn distance(self: Point, dst: Point) f32 {
-    const diffx = dst.x - self.x;
-    const diffy = dst.y - self.y;
-    return @sqrt(std.math.pow(f32, diffx, 2.0) + std.math.pow(f32, diffy, 2.0));
+        // parameters are now Self, and we return type T
+        pub fn distance(self: Self, dst: Self) T {
+            const diffx = dst.x - self.x;
+            const diffy = dst.y - self.y;
+            return @sqrt(std.math.pow(T, diffx, 2) + std.math.pow(T, diffy, 2));
+        }
+    };
 }
