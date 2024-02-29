@@ -34,6 +34,41 @@ test "fba bytes" {
     try std.testing.expectEqualStrings(h ++ w, result);
 }
 
+// returns a slice of type `item` and length `n`
+// caller must free memory
+fn sliceAlloc(allocator: std.mem.Allocator, item: anytype, n: usize) ![]@TypeOf(item) {
+    const slice = try allocator.alloc(@TypeOf(item), n); // set type from `item` and length of `n`
+    for (slice) |*e| e.* = item; // iterate over the slice, capture a pointer for each element, deref and assign item
+    return slice; // retur the slice
+}
+
+test "fba structs" {
+    const Foo = struct {
+        a: u8 = 100,
+        b: []const u8 = "Hello, world!",
+    };
+
+    // inputs
+    const foo = Foo{}; // item
+    const n = 2; // length
+
+    // the buffer must always be an array of bytes so we need to calculate the size of items using `@sizeOf`
+    var buf: [n * @sizeOf(Foo)]u8 = undefined;
+    var fba = std.heap.FixedBufferAllocator.init(&buf); // wants a slice (pointer), pass it address of `buf`
+    const allocator = fba.allocator();
+
+    const result = try sliceAlloc(allocator, foo, n);
+    defer allocator.free(result);
+
+    // expect slices: type Foo, expect: in-place slice containinf 2*Foo, actual: result
+    try std.testing.expectEqualSlices(Foo, &[_]Foo{ foo, foo }, result);
+}
+
 pub fn main() !void {
-    // nothing here again :)
+    const run_test_instead =
+        \\ run:
+        \\ `zig build test --summary all`
+    ;
+
+    std.debug.print("{s}\n", .{run_test_instead});
 }
