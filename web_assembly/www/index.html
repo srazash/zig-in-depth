@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Zig WASM Demo</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        <h1>Zig WASM Demo</h1>
+
+        <p>If you cannot see anything below this paragraph please ensure you have run `zig build` to generate the wasmstr.wasm file and copied it to the www directory!</p>
+
+        <h2 id="sum"></h2>
+        <h2 id="diff"></h2>
+        <h2 id="log"></h2>
+
+        <script>
+            // functions imported from Zig WASM lib
+            let add, alloc, free, memory, sub, zlog; // we also import memory, this is a pre-baked function that comes with WASM
+
+            // convenience function that returns a typed byte array from a
+            // pointer and length passed into WASM memory
+            function getView(ptr, len) {
+                return new Uint8Array(memory.buffer, ptr, len);
+            }
+
+            // another convenience function that lets use re-encode UTF-16 string that
+            // JS uses into a UTF-8 typed byte array in WASM memory
+            function encodeStr(str) {
+                const capacity = str.length * 2 + 5; // as per MDN
+                const ptr = alloc(capacity); // call our alloc() function
+                const { written } = new TextEncoder().encodeInto(str, getView(ptr, capacity));
+                return [ptr, written, capacity];
+            }
+
+            // decode UTF-8 typed byte array in WASM memory back to UTF-16 string for JS
+            function decodeStr(ptr, len) {
+                return new TextDecoder().decode(getView(ptr, len));
+            }
+
+            // env exports to WASM
+            // (`extern "env" fn jsLog(...) void` in main.zig)
+            let importObject = { env: {
+                // export this function to WASM
+                jsLog: (ptr, len) => {
+                    const msg = decodeStr(ptr, len); // decode the string to UTF-16
+                    document.querySelector('#log').textContent = msg; // assign it to h2 tag with `id="log"`
+                    console.log(msg);
+                }
+            } };
+
+            // instantiate WASM lib and run code
+            WebAssembly.instantiateStreaming(fetch('./wasmstr.wasm'), importObject)
+                .then((wasm_binary) => {
+                    // import WASM lib functions
+                    ({ add, alloc, free, memory, sub, zlog } = wasm_binary.instance.exports);
+
+                    // pass string from JS to WASM
+                    const [ptr, len, capacity] = encodeStr("From Zig⚡ to WASM to JS: HELLO!");
+                    zlog(ptr, len);
+
+                    // we need to manually free the strings bytes from WASM memory
+                    free(ptr, capacity);
+
+                    // we can call the add and sub functions
+                    document.querySelector('#sum').textContent = 'add(50, 100) = ' + add(50, 100);
+                    document.querySelector('#diff').textContent = 'sub(250, 150) = ' + sub(250, 150);
+                });
+        </script>
+    </body>
+</html>
